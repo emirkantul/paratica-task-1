@@ -83,18 +83,26 @@ Buying strategy is built on the RSI indicator and checks the lastly closed candl
 # Endpoints  webs
 
 # 1- GET /history
-After creating our database and running our simple fast api and unvicorn based app, we can now create our first endpoint. This endpoint will get all signal records saved before from the database and send to user as a response.
+After creating our database and running our simple fast api and unvicorn based app, we can now create our first endpoint. 
+
+      @app.get("/history/")
+      def read_history():
+
+This endpoint will get all signal records saved before from the database and send to user as a response.
 
 With this command:
 
-sql_command = "SELECT pair_symbol, signal_date, rsi_2, rsi_1, previous_candle from RSI_SIGNAL"
+        sql_command = "SELECT pair_symbol, signal_date, rsi_2, rsi_1, previous_candle from RSI_SIGNAL"
 
 we can easily select all data from our database. To run use cursor as shown before. After we can use the cursor.fetchall() function to fetch all data to an array and we can return this array to the user.
+
+        history = cur.fetchall()
+        return {"history": history}
 
 # 2- GET /history/<parity_symbol>
 Only difference is we should only get the records with given parity_symbol (example: BTCUSDT). 
 
-sql_command = f"SELECT pair_symbol, signal_date, rsi_2, rsi_1, previous_candle from RSI_SIGNAL where pair_symbol=\'{parity_symbol}\'"
+        sql_command = f"SELECT pair_symbol, signal_date, rsi_2, rsi_1, previous_candle from RSI_SIGNAL where pair_symbol=\'{parity_symbol}\'"
 
 We can use WHERE command to filter data and send to user back as same before.
 
@@ -102,4 +110,4 @@ We can use WHERE command to filter data and send to user back as same before.
 This is the part where things get tricky for me. First thing I thought was this part will be always working and checking signals non-stop but its not and it should check whenever a request came. But I tried something that after taking request a thread is created with checkRSI (check checkRSI.py) function and connecting to Binance's web-socket then retrieve live data for given parity_symbol. Normally another API should be used this purpose but since this is my first task I tried something different. I used threading to let main.py work and take care of requests while other thread check live data from Binance and looking for a situation that we can create a signal. Also last 14 (w_length) price data to populate closed_prices list so we can calculate RSI for last price data. After thread starts running if there is any creatable signal it hold on created_signals list (this list will be used on next endpoint). If another request came then we can return back our created signals if there is any.
 
 # 4- PUT /save_signal/<parity_symbol>
-Finally if we get this request. We first check created_signals and look if there is any signal created for given parity symbol. If not we send a error response saying there is no signals to save. If there is any we saved them to database using addToDb() and return success message
+Finally if we get this request. We first check created_signals and look if there is any signal created for given parity symbol. If not we send a error response saying there is no signals to save. If there is any we saved them to database using addToDb() and return success message.
