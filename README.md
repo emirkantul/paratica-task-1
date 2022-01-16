@@ -30,26 +30,33 @@ con = psycopg2.connect(database="postgres", user="postgres", password=postgres_p
 
 creating table:
 
-cur = con.cursor()
-cur.execute('''CREATE TABLE RSI_SIGNAL
+      con = psycopg2.connect(database="postgres", user="postgres", password=postgres_pass, host="127.0.0.1", port="5432")
+      cur = con.cursor()
+      cur.execute('''CREATE TABLE RSI_SIGNAL
       (id               SERIAL      PRIMARY KEY,
       pair_symbol       CHAR(50)    NOT NULL,
       signal_date       TIMESTAMP   NOT NULL,
       rsi_2             real        NOT NULL,
       rsi_1             real        NOT NULL,
       previous_candle   real        NOT NULL);''')
-con.commit()
-con.close()
+      
+      con.commit()
+      con.close()
 
 Also I create a file named AddToDb.py and create a function to easily add a record to database. This function just connects to database and run a INSERT INTO sql command with given parameters. 
 
  def addRecord(pair_symbol, signal_date, rsi_2, rsi_1, previous_candle):
  
 For this task only one table required to hold informations:
+
 ● pair_symbol
+
 ● signal_date
+
 ● RSI[-2] value
+
 ● RSI[-1] value
+
 ● close value of the previous candle (Candle[-1])
 
 You can easily run SQL commands with python using psycopg2 library -> https://www.psycopg.org/docs/usage.html
