@@ -22,7 +22,7 @@ def read_root():
 def read_parity_history(parity_symbol: str):
     global con
     cur = con.cursor()
-    sql_command = "SELECT pair_symbol, signal_date, rsi_2, rsi_1, previous_candle from RSI_SIGNAL where pair_symbol='" + parity_symbol + "'"
+    sql_command = f"SELECT pair_symbol, signal_date, rsi_2, rsi_1, previous_candle from RSI_SIGNAL where pair_symbol=\'{parity_symbol}\'"
     cur.execute(sql_command)
     parity_history = cur.fetchall()
     return {"parity_symbol": parity_symbol, "parity_history": parity_history}
